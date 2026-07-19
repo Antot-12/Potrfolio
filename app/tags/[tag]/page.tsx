@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { slug } from 'github-slugger';
-import { allBlogs } from 'contentlayer/generated';
+import { allBlogs } from '.contentlayer/generated';
 import { allCoreContent, sortPosts } from 'pliny/utils/contentlayer';
 
 import { ListLayout } from 'layouts';

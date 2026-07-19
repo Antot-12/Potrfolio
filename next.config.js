@@ -243,11 +243,5 @@ module.exports = () => {
 
       return config;
     },
-    onError: (err) => {
-      if (!(err instanceof Error)) {
-        throw new Error('An unexpected error occurred');
-      }
-      throw err;
-    },
   });
 };

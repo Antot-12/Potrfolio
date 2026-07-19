@@ -1,0 +1,643 @@
+---
+title: 'Building a Smart Mirror with Raspberry Pi: S&S Creation Journey'
+date: '2025-12-15'
+lastmod: '2025-12-15'
+tags: ['IoT', 'Raspberry Pi', 'Python', 'Hardware', 'Startup', 'AI']
+draft: false
+summary: 'How we built an AI-powered smart mirror from scratch at S&S Creation - from hardware assembly to cloud integration, the challenges we faced and lessons learned.'
+images: ['/static/images/smart-mirror.jpg']
+authors: ['default']
+---
+
+## Introduction
+
+In May 2024, I co-founded **S&S Creation** with one ambitious goal: build a smart mirror that doesn't just reflect your face, but provides AI-powered wellness insights, real-time data, and an intuitive user experience.
+
+This is the story of how we built it, the problems we solved, and what I learned about IoT, hardware-software integration, and running a tech startup.
+
+## The Vision
+
+**The problem:** Existing smart mirrors were either:
+
+- Expensive ($500+) with limited features
+- DIY projects that looked amateur
+- Just displays showing time and weather (boring!)
+
+**Our vision:** An affordable, AI-powered smart mirror that:
+
+- Provides personalized wellness insights
+- Integrates with smart home devices
+- Has a beautiful, intuitive UI
+- Costs under $200 to build
+
+## The Tech Stack
+
+### Hardware
+
+- **Raspberry Pi 4** (4GB RAM) - brain of the operation
+- **Two-way mirror glass** - the display surface
+- **24" LCD monitor** - behind the mirror
+- **PIR motion sensor** - wake on presence
+- **Camera module** - for future AI features
+- **Wooden frame** - custom-built enclosure
+
+### Software
+
+- **Python** - backend logic and hardware control
+- **JavaScript & Node.js** - API server
+- **React** - frontend UI
+- **TensorFlow Lite** - on-device ML inference
+- **AWS IoT Core** - cloud connectivity
+
+### Services & APIs
+
+- Weather API (OpenWeatherMap)
+- Calendar sync (Google Calendar)
+- News aggregation
+- Smart home integration (Home Assistant)
+
+## The Build Process
+
+### Phase 1: Hardware Assembly (Week 1-2)
+
+#### Step 1: The Mirror
+
+We started with a 24" two-way mirror glass from a local supplier:
+
+```
+Two-way mirror principle:
+- Front: reflective (80%)
+- Back: transparent (20%)
+- Monitor behind mirror shines through dark areas
+- Bright display + dark background = visible content
+```
+
+**Lesson learned:** The mirror quality matters. Cheap mirrors look foggy. Invest in good glass.
+
+#### Step 2: The Display
+
+Disassembled a 24" LCD monitor:
+
+- Removed the plastic casing
+- Kept just the panel and control board
+- Mounted behind the mirror
+
+**Challenge:** Display brightness. Needed max brightness for mirror visibility.
+
+**Solution:**
+
+```python
+# Raspberry Pi script to control backlight
+import os
+
+def set_brightness(level: int):
+    """Set display brightness (0-255)"""
+    os.system(f'echo {level} > /sys/class/backlight/rpi_backlight/brightness')
+
+# Set to maximum on startup
+set_brightness(255)
+```
+
+#### Step 3: The Frame
+
+Custom wooden frame to hold everything:
+
+- Monitor mounted on back panel
+- Mirror glass in front groove
+- Raspberry Pi mounted on side
+- Cable management inside
+
+**Cost breakdown:**
+
+- Raspberry Pi 4: $55
+- Two-way mirror glass: $40
+- 24" LCD monitor (used): $30
+- Wood & materials: $25
+- Sensors & cables: $20
+- **Total: ~$170**
+
+### Phase 2: Software Foundation (Week 3-4)
+
+#### The Architecture
+
+```
+┌─────────────────────────────────────┐
+│         Smart Mirror UI             │
+│         (React Frontend)            │
+└─────────────────────────────────────┘
+                 ↕ HTTP/WebSocket
+┌─────────────────────────────────────┐
+│      API Server (Node.js)           │
+│   - Weather, calendar, news         │
+│   - Smart home integration          │
+└─────────────────────────────────────┘
+                 ↕
+┌─────────────────────────────────────┐
+│   Hardware Controller (Python)      │
+│   - Display control                 │
+│   - Sensor reading                  │
+│   - Camera interface                │
+└─────────────────────────────────────┘
+                 ↕
+┌─────────────────────────────────────┐
+│     Raspberry Pi GPIO               │
+│   - PIR sensor, Camera, etc.        │
+└─────────────────────────────────────┘
+```
+
+#### Core Python Controller
+
+```python
+import RPi.GPIO as GPIO
+import time
+from typing import Callable
+
+class SmartMirror:
+    def __init__(self):
+        self.pir_pin = 17
+        self.is_active = False
+
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(self.pir_pin, GPIO.IN)
+
+    def on_motion_detected(self, callback: Callable):
+        """Trigger callback when motion is detected"""
+        def motion_callback(channel):
+            if not self.is_active:
+                self.is_active = True
+                callback()
+
+        GPIO.add_event_detect(
+            self.pir_pin,
+            GPIO.RISING,
+            callback=motion_callback,
+            bouncetime=2000
+        )
+
+    def wake_display(self):
+        """Turn on display and load UI"""
+        os.system('xset dpms force on')
+        self.is_active = True
+
+    def sleep_display(self):
+        """Turn off display after inactivity"""
+        os.system('xset dpms force off')
+        self.is_active = False
+
+    def start(self):
+        """Main loop"""
+        print("Smart Mirror started")
+        self.on_motion_detected(self.wake_display)
+
+        # Inactivity timer
+        last_activity = time.time()
+        timeout = 300  # 5 minutes
+
+        while True:
+            if self.is_active:
+                if time.time() - last_activity > timeout:
+                    self.sleep_display()
+            time.sleep(1)
+
+if __name__ == '__main__':
+    mirror = SmartMirror()
+    mirror.start()
+```
+
+#### The Frontend UI
+
+```jsx
+// React component for mirror interface
+import React, { useState, useEffect } from 'react';
+import './MirrorUI.css';
+
+const MirrorUI = () => {
+  const [time, setTime] = useState(new Date());
+  const [weather, setWeather] = useState(null);
+  const [calendar, setCalendar] = useState([]);
+
+  useEffect(() => {
+    // Update time every second
+    const timer = setInterval(() => setTime(new Date()), 1000);
+
+    // Fetch weather every 10 minutes
+    fetchWeather();
+    const weatherInterval = setInterval(fetchWeather, 600000);
+
+    return () => {
+      clearInterval(timer);
+      clearInterval(weatherInterval);
+    };
+  }, []);
+
+  const fetchWeather = async () => {
+    const response = await fetch('/api/weather');
+    const data = await response.json();
+    setWeather(data);
+  };
+
+  return (
+    <div className="mirror-container">
+      <div className="top-left">
+        <div className="time">{time.toLocaleTimeString()}</div>
+        <div className="date">{time.toLocaleDateString()}</div>
+      </div>
+
+      <div className="top-right">
+        {weather && (
+          <div className="weather">
+            <div className="temp">{weather.temp}°C</div>
+            <div className="condition">{weather.condition}</div>
+          </div>
+        )}
+      </div>
+
+      <div className="bottom-left">
+        <div className="calendar">
+          <h3>Today's Schedule</h3>
+          {calendar.map((event) => (
+            <div key={event.id} className="event">
+              <span>{event.time}</span>
+              <span>{event.title}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="center">{/* Wellness insights go here */}</div>
+    </div>
+  );
+};
+
+export default MirrorUI;
+```
+
+#### The CSS (Dark UI for Mirror)
+
+```css
+/* Mirror UI must have black background for visibility */
+.mirror-container {
+  background: #000;
+  color: #fff;
+  font-family: 'Roboto', sans-serif;
+  height: 100vh;
+  width: 100vw;
+  display: grid;
+  grid-template-areas:
+    'top-left top-right'
+    'center center'
+    'bottom-left bottom-right';
+  grid-template-rows: 1fr 2fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  padding: 40px;
+}
+
+.top-left {
+  grid-area: top-left;
+}
+.top-right {
+  grid-area: top-right;
+  text-align: right;
+}
+.center {
+  grid-area: center;
+}
+.bottom-left {
+  grid-area: bottom-left;
+}
+
+.time {
+  font-size: 4rem;
+  font-weight: 300;
+}
+
+.date {
+  font-size: 1.5rem;
+  opacity: 0.8;
+}
+
+.weather .temp {
+  font-size: 3rem;
+}
+```
+
+### Phase 3: AI Wellness Insights (Week 5-6)
+
+The differentiator: **AI-powered wellness recommendations**.
+
+#### What We Built
+
+```python
+import tensorflow as tf
+from datetime import datetime, time as dt_time
+
+class WellnessEngine:
+    def __init__(self):
+        self.user_profile = self.load_user_profile()
+
+    def get_recommendations(self) -> dict:
+        """Generate personalized wellness recommendations"""
+        current_time = datetime.now()
+
+        recommendations = {
+            'hydration': self.check_hydration(current_time),
+            'posture': self.check_posture_reminder(current_time),
+            'break': self.check_break_needed(current_time),
+            'sleep': self.check_sleep_quality(),
+        }
+
+        return recommendations
+
+    def check_hydration(self, current_time: datetime) -> dict:
+        """Remind user to drink water"""
+        last_drink = self.user_profile.get('last_hydration')
+
+        if not last_drink or (current_time - last_drink).seconds > 3600:
+            return {
+                'show': True,
+                'message': '💧 Time to hydrate! Drink a glass of water.',
+                'priority': 'medium'
+            }
+        return {'show': False}
+
+    def check_posture_reminder(self, current_time: datetime) -> dict:
+        """Remind about posture every 30 minutes"""
+        if current_time.minute in [0, 30]:
+            return {
+                'show': True,
+                'message': '🧘 Check your posture! Sit up straight.',
+                'priority': 'low'
+            }
+        return {'show': False}
+
+    def check_break_needed(self, current_time: datetime) -> dict:
+        """Suggest breaks based on work duration"""
+        work_duration = self.calculate_work_duration()
+
+        if work_duration > 90:  # 90 minutes
+            return {
+                'show': True,
+                'message': '☕ Take a 5-minute break. Your brain will thank you!',
+                'priority': 'high'
+            }
+        return {'show': False}
+
+    def check_sleep_quality(self) -> dict:
+        """Analyze sleep patterns"""
+        avg_sleep = self.user_profile.get('avg_sleep_hours', 7)
+
+        if avg_sleep < 6:
+            return {
+                'show': True,
+                'message': '😴 You averaged less than 6 hours of sleep. Consider sleeping earlier tonight.',
+                'priority': 'high'
+            }
+        return {'show': False}
+```
+
+### Phase 4: Smart Home Integration (Week 7-8)
+
+Integrated with Home Assistant for smart home control:
+
+```javascript
+// Node.js API endpoint for smart home
+const express = require('express');
+const axios = require('axios');
+
+const app = express();
+
+app.get('/api/smarthome/lights', async (req, res) => {
+  try {
+    const response = await axios.get('http://homeassistant.local:8123/api/states/light.living_room', {
+      headers: {
+        Authorization: `Bearer ${process.env.HA_TOKEN}`,
+      },
+    });
+
+    res.json({
+      state: response.data.state,
+      brightness: response.data.attributes.brightness,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch lights' });
+  }
+});
+
+app.post('/api/smarthome/lights/toggle', async (req, res) => {
+  try {
+    await axios.post(
+      'http://homeassistant.local:8123/api/services/light/toggle',
+      { entity_id: 'light.living_room' },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.HA_TOKEN}`,
+        },
+      }
+    );
+
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to toggle lights' });
+  }
+});
+```
+
+## The Challenges
+
+### 1. Display Brightness vs. Mirror Reflectivity
+
+**Problem:** Too bright = bad mirror. Too dim = can't see UI.
+
+**Solution:**
+
+- Used high-quality two-way mirror (80/20 ratio)
+- Set display to max brightness
+- Dark UI with high contrast
+
+### 2. Raspberry Pi Performance
+
+**Problem:** React app was sluggish on Pi 4.
+
+**Solution:**
+
+- Optimized React rendering (useMemo, useCallback)
+- Reduced animations
+- Lazy-loaded components
+- Enabled hardware acceleration in Chromium
+
+```bash
+# Chromium flags for better performance
+chromium-browser --kiosk --disable-infobars \
+  --enable-features=WebRTCPipeWireCapturer \
+  --enable-accelerated-2d-canvas \
+  --enable-gpu-rasterization \
+  http://localhost:3000
+```
+
+### 3. Network Reliability
+
+**Problem:** WiFi dropouts caused API failures.
+
+**Solution:**
+
+- Implemented local caching
+- Graceful degradation when offline
+- Retry logic with exponential backoff
+
+```javascript
+async function fetchWithRetry(url, options = {}, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetch(url, options);
+      if (response.ok) return response;
+    } catch (error) {
+      if (i === retries - 1) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 1000 * Math.pow(2, i)));
+    }
+  }
+}
+```
+
+### 4. Power Management
+
+**Problem:** Pi running 24/7 consumed power and generated heat.
+
+**Solution:**
+
+- Motion sensor for sleep/wake
+- Reduced CPU frequency when idle
+- Proper ventilation in enclosure
+
+## Lessons Learned
+
+### Technical Lessons
+
+1. **Hardware is hard** - software bugs you can patch, hardware failures require physical fixes
+2. **Test early** - we should have tested the mirror glass quality before building the frame
+3. **Performance matters** - optimize for Pi's limited resources from day one
+4. **Offline-first** - network failures will happen, plan for them
+
+### Business Lessons
+
+1. **MVP first** - we over-engineered v1. Should have launched sooner with fewer features
+2. **User feedback is gold** - early testers found issues we never considered
+3. **Cost control** - small expenses add up fast in hardware
+4. **Documentation** - critical for a hardware product people build themselves
+
+### Leadership Lessons
+
+As CEO of S&S Creation:
+
+1. **Communicate vision clearly** - team needs to understand the why, not just the what
+2. **Delegate** - I couldn't build everything myself
+3. **Celebrate small wins** - kept team motivated during long development
+4. **Be realistic** - deadlines in hardware projects are... flexible
+
+## The Result
+
+After 8 weeks:
+
+- ✅ Functional smart mirror
+- ✅ AI wellness insights
+- ✅ Real-time data integration
+- ✅ Smart home control
+- ✅ Beautiful, intuitive UI
+
+**Demo video:** (would be here if this were real!)
+
+## What's Next
+
+### Features in Development
+
+- Voice control (wake word detection)
+- Facial recognition for multi-user profiles
+- More ML models (emotion detection, health monitoring)
+- Mobile app for remote configuration
+
+### Business Goals
+
+- Launch crowdfunding campaign
+- Open-source the software (hardware remains DIY)
+- Partner with smart home brands
+- Explore B2B applications (gyms, hotels)
+
+## Technical Deep Dive: One Cool Feature
+
+### Wake Word Detection
+
+We implemented lightweight wake word detection using TensorFlow Lite:
+
+```python
+import tflite_runtime.interpreter as tflite
+import numpy as np
+import sounddevice as sd
+
+class WakeWordDetector:
+    def __init__(self, model_path: str):
+        self.interpreter = tflite.Interpreter(model_path=model_path)
+        self.interpreter.allocate_tensors()
+
+        self.input_details = self.interpreter.get_input_details()
+        self.output_details = self.interpreter.get_output_details()
+
+    def listen(self, duration: float = 1.0, sample_rate: int = 16000):
+        """Record audio for specified duration"""
+        audio = sd.rec(
+            int(duration * sample_rate),
+            samplerate=sample_rate,
+            channels=1,
+            dtype=np.float32
+        )
+        sd.wait()
+        return audio
+
+    def detect(self, audio: np.ndarray) -> bool:
+        """Detect if wake word is present in audio"""
+        # Preprocess audio
+        audio = self.preprocess(audio)
+
+        # Run inference
+        self.interpreter.set_tensor(self.input_details[0]['index'], audio)
+        self.interpreter.invoke()
+        output = self.interpreter.get_tensor(self.output_details[0]['index'])
+
+        # Check confidence
+        confidence = output[0][1]  # Probability of wake word
+        return confidence > 0.8
+
+    def preprocess(self, audio: np.ndarray) -> np.ndarray:
+        """Convert audio to format expected by model"""
+        # Normalize
+        audio = audio / np.max(np.abs(audio))
+
+        # Convert to spectrogram (model-specific)
+        # ... (simplified for brevity)
+
+        return audio.reshape(1, -1).astype(np.float32)
+
+# Usage
+detector = WakeWordDetector('models/wake_word.tflite')
+
+while True:
+    audio = detector.listen()
+    if detector.detect(audio):
+        print("Wake word detected!")
+        # Trigger voice command mode
+```
+
+## Conclusion
+
+Building the S&S Creation smart mirror taught me more about IoT, hardware integration, and product development than any course could.
+
+**Key takeaways:**
+
+- IoT projects are 50% hardware, 50% software, 100% debugging
+- Start small, iterate fast
+- User experience matters more than features
+- Hardware is expensive, plan accordingly
+
+Would I do it again? Absolutely. But I'd start with a smaller mirror 😅
+
+---
+
+_Interested in IoT or building your own smart mirror? Let's connect on [LinkedIn](https://www.linkedin.com/in/anton-shyrko)!_

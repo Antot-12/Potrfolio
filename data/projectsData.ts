@@ -3,6 +3,23 @@ import type { Project } from '@/types/data';
 const projectsData: Project[] = [
   {
     type: 'self',
+    title: 'Smart URL Shortener',
+    description: 'A simple, fast, and customizable URL shortener built with modern TypeScript and Node.js.',
+    imgSrc: '/static/images/projects/smart-url-shortener.png',
+    repo: 'Antot-12/Smart-URL-Shortener',
+    builtWith: ['TypeScript', 'Node.js', 'Express', 'PostgreSQL', 'Redis', 'React', 'Tailwind CSS', 'Docker'],
+  },
+  {
+    type: 'self',
+    title: 'Guess My Number Game',
+    description:
+      'A fun React Native app where you challenge the app to guess your number! Features smooth animations and engaging gameplay.',
+    imgSrc: '/static/images/projects/guess-my-number-game.png',
+    repo: 'Antot-12/Guess-My-Number-Game',
+    builtWith: ['React Native', 'TypeScript', 'Expo', 'Android Studio', 'iOS'],
+  },
+  {
+    type: 'self',
     title: 'Password Generator',
     description: 'A Python application that generates secure and customizable passwords for users.',
     imgSrc: '/static/images/projects/password-generator.png',

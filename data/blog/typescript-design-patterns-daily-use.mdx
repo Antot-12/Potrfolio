@@ -1,0 +1,538 @@
+---
+title: 'TypeScript Design Patterns I Use Daily at SAP'
+date: '2025-01-28'
+lastmod: '2025-01-28'
+tags: ['TypeScript', 'Design Patterns', 'Best Practices', 'Software Architecture']
+draft: false
+summary: 'Practical design patterns that make TypeScript code more maintainable, scalable, and robust in production microservices.'
+images: ['/static/images/typescript-patterns.jpg']
+authors: ['default']
+---
+
+## Introduction
+
+After completing the TypeScript Design Patterns certification and applying these concepts in production at SAP, I've learned which patterns actually matter in real-world applications.
+
+This isn't an exhaustive catalog - it's the patterns I use almost daily when building cloud microservices.
+
+## 1. Repository Pattern
+
+**Problem:** Direct database access scattered throughout your code makes testing and swapping data sources difficult.
+
+**Solution:** Abstract data access behind an interface.
+
+```typescript
+// Domain model
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: Date;
+}
+
+// Repository interface
+interface UserRepository {
+  findById(id: string): Promise<User | null>;
+  findByEmail(email: string): Promise<User | null>;
+  create(user: Omit<User, 'id' | 'createdAt'>): Promise<User>;
+  update(id: string, data: Partial<User>): Promise<User>;
+  delete(id: string): Promise<void>;
+}
+
+// Concrete implementation
+class PostgresUserRepository implements UserRepository {
+  constructor(private db: DatabaseClient) {}
+
+  async findById(id: string): Promise<User | null> {
+    const result = await this.db.query('SELECT * FROM users WHERE id = $1', [id]);
+    return result.rows[0] || null;
+  }
+
+  async create(userData: Omit<User, 'id' | 'createdAt'>): Promise<User> {
+    const result = await this.db.query('INSERT INTO users (email, name) VALUES ($1, $2) RETURNING *', [
+      userData.email,
+      userData.name,
+    ]);
+    return result.rows[0];
+  }
+
+  // ... other methods
+}
+```
+
+**Why it's useful:**
+
+- Easy to mock for testing
+- Can swap PostgreSQL for MongoDB without changing business logic
+- Centralizes data access patterns
+
+## 2. Factory Pattern
+
+**Problem:** Complex object creation logic spreads across your codebase.
+
+**Solution:** Centralize creation logic in factory functions/classes.
+
+```typescript
+// Different service configurations for different environments
+interface ServiceConfig {
+  timeout: number;
+  retries: number;
+  baseURL: string;
+  auth: AuthConfig;
+}
+
+class ServiceFactory {
+  static createForEnvironment(env: 'dev' | 'staging' | 'prod'): APIService {
+    const config = this.getConfig(env);
+    const logger = this.createLogger(env);
+    const metrics = this.createMetrics(env);
+
+    return new APIService(config, logger, metrics);
+  }
+
+  private static getConfig(env: string): ServiceConfig {
+    switch (env) {
+      case 'dev':
+        return {
+          timeout: 5000,
+          retries: 1,
+          baseURL: 'http://localhost:3000',
+          auth: { type: 'none' },
+        };
+      case 'prod':
+        return {
+          timeout: 3000,
+          retries: 3,
+          baseURL: process.env.API_URL!,
+          auth: {
+            type: 'oauth',
+            tokenUrl: process.env.TOKEN_URL!,
+          },
+        };
+      default:
+        throw new Error(`Unknown environment: ${env}`);
+    }
+  }
+
+  // ... helper methods
+}
+
+// Usage
+const service = ServiceFactory.createForEnvironment(process.env.NODE_ENV);
+```
+
+**Why it's useful:**
+
+- Environment-specific configuration in one place
+- Easier testing with dev/test factories
+- Consistent object initialization
+
+## 3. Strategy Pattern
+
+**Problem:** Different algorithms for the same operation, selected at runtime.
+
+**Solution:** Define a family of algorithms and make them interchangeable.
+
+```typescript
+// Strategy interface
+interface PricingStrategy {
+  calculatePrice(basePrice: number, quantity: number): number;
+}
+
+// Concrete strategies
+class StandardPricing implements PricingStrategy {
+  calculatePrice(basePrice: number, quantity: number): number {
+    return basePrice * quantity;
+  }
+}
+
+class BulkPricing implements PricingStrategy {
+  constructor(
+    private discountThreshold: number,
+    private discount: number
+  ) {}
+
+  calculatePrice(basePrice: number, quantity: number): number {
+    const total = basePrice * quantity;
+    if (quantity >= this.discountThreshold) {
+      return total * (1 - this.discount);
+    }
+    return total;
+  }
+}
+
+class SeasonalPricing implements PricingStrategy {
+  constructor(private seasonMultiplier: number) {}
+
+  calculatePrice(basePrice: number, quantity: number): number {
+    return basePrice * quantity * this.seasonMultiplier;
+  }
+}
+
+// Context
+class ShoppingCart {
+  constructor(private pricingStrategy: PricingStrategy) {}
+
+  setPricingStrategy(strategy: PricingStrategy): void {
+    this.pricingStrategy = strategy;
+  }
+
+  calculateTotal(items: Array<{ price: number; quantity: number }>): number {
+    return items.reduce((total, item) => total + this.pricingStrategy.calculatePrice(item.price, item.quantity), 0);
+  }
+}
+
+// Usage
+const cart = new ShoppingCart(new StandardPricing());
+const total = cart.calculateTotal(items);
+
+// Switch to bulk pricing for large orders
+if (totalItems > 100) {
+  cart.setPricingStrategy(new BulkPricing(50, 0.1));
+}
+```
+
+**Why it's useful:**
+
+- Easy to add new pricing models
+- Testable in isolation
+- Runtime behavior change without conditionals
+
+## 4. Decorator Pattern
+
+**Problem:** You need to add behavior to objects without modifying their class.
+
+**Solution:** Wrap objects in decorator classes that add functionality.
+
+```typescript
+// Base interface
+interface Logger {
+  log(message: string): void;
+}
+
+// Base implementation
+class BasicLogger implements Logger {
+  log(message: string): void {
+    console.log(message);
+  }
+}
+
+// Decorators
+class TimestampLogger implements Logger {
+  constructor(private logger: Logger) {}
+
+  log(message: string): void {
+    const timestamp = new Date().toISOString();
+    this.logger.log(`[${timestamp}] ${message}`);
+  }
+}
+
+class ErrorLogger implements Logger {
+  constructor(
+    private logger: Logger,
+    private errorTracker: ErrorTrackingService
+  ) {}
+
+  log(message: string): void {
+    this.logger.log(message);
+
+    // If message contains error keywords, send to error tracker
+    if (message.toLowerCase().includes('error')) {
+      this.errorTracker.track(message);
+    }
+  }
+}
+
+class MetricsLogger implements Logger {
+  constructor(
+    private logger: Logger,
+    private metrics: MetricsService
+  ) {}
+
+  log(message: string): void {
+    this.logger.log(message);
+    this.metrics.increment('logs.count');
+  }
+}
+
+// Usage - stack decorators
+const logger = new MetricsLogger(new ErrorLogger(new TimestampLogger(new BasicLogger()), errorTracker), metrics);
+
+logger.log('User logged in'); // Logged with timestamp, counted in metrics
+logger.log('Database error'); // Also sent to error tracker
+```
+
+**Why it's useful:**
+
+- Add functionality without changing existing code
+- Compose behaviors dynamically
+- Each decorator has single responsibility
+
+## 5. Singleton Pattern (with caveats)
+
+**Problem:** You need exactly one instance of a class (database connection, config).
+
+**Solution:** Ensure a class has only one instance and provide global access.
+
+```typescript
+class DatabaseConnection {
+  private static instance: DatabaseConnection;
+  private connection: Connection;
+
+  private constructor() {
+    // Private constructor prevents direct instantiation
+    this.connection = this.createConnection();
+  }
+
+  static getInstance(): DatabaseConnection {
+    if (!DatabaseConnection.instance) {
+      DatabaseConnection.instance = new DatabaseConnection();
+    }
+    return DatabaseConnection.instance;
+  }
+
+  private createConnection(): Connection {
+    return {
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT!),
+      // ... connection setup
+    };
+  }
+
+  query(sql: string, params: any[]): Promise<any> {
+    return this.connection.query(sql, params);
+  }
+}
+
+// Usage
+const db = DatabaseConnection.getInstance();
+```
+
+**Caveat:** Singletons make testing harder. Better approach:
+
+```typescript
+// Better: Use dependency injection
+class UserService {
+  constructor(private db: DatabaseConnection) {}
+
+  // ... methods
+}
+
+// In production
+const db = DatabaseConnection.getInstance();
+const userService = new UserService(db);
+
+// In tests
+const mockDb = new MockDatabase();
+const userService = new UserService(mockDb);
+```
+
+## 6. Observer Pattern
+
+**Problem:** Multiple parts of your application need to react to state changes.
+
+**Solution:** Define a subscription mechanism.
+
+```typescript
+type EventCallback<T = any> = (data: T) => void;
+
+class EventEmitter {
+  private events: Map<string, Set<EventCallback>> = new Map();
+
+  on(event: string, callback: EventCallback): void {
+    if (!this.events.has(event)) {
+      this.events.set(event, new Set());
+    }
+    this.events.get(event)!.add(callback);
+  }
+
+  off(event: string, callback: EventCallback): void {
+    this.events.get(event)?.delete(callback);
+  }
+
+  emit(event: string, data: any): void {
+    this.events.get(event)?.forEach((callback) => callback(data));
+  }
+}
+
+// Real-world usage
+class OrderService extends EventEmitter {
+  async createOrder(orderData: CreateOrderDTO): Promise<Order> {
+    const order = await this.repository.create(orderData);
+
+    // Emit event - other services can react
+    this.emit('order:created', order);
+
+    return order;
+  }
+}
+
+// Subscribers
+const orderService = new OrderService();
+
+orderService.on('order:created', (order) => {
+  emailService.sendConfirmation(order);
+});
+
+orderService.on('order:created', (order) => {
+  inventoryService.reserveStock(order.items);
+});
+
+orderService.on('order:created', (order) => {
+  analyticsService.trackPurchase(order);
+});
+```
+
+**Why it's useful:**
+
+- Decouples event producers from consumers
+- Easy to add new reactions to events
+- Core service doesn't need to know about email/inventory/analytics
+
+## 7. Builder Pattern
+
+**Problem:** Objects with many optional parameters lead to messy constructors.
+
+**Solution:** Build complex objects step by step.
+
+```typescript
+interface EmailOptions {
+  to: string[];
+  cc?: string[];
+  bcc?: string[];
+  subject: string;
+  body: string;
+  attachments?: Attachment[];
+  priority?: 'low' | 'normal' | 'high';
+  replyTo?: string;
+}
+
+class EmailBuilder {
+  private options: Partial<EmailOptions> = {};
+
+  to(addresses: string | string[]): this {
+    this.options.to = Array.isArray(addresses) ? addresses : [addresses];
+    return this;
+  }
+
+  cc(addresses: string | string[]): this {
+    this.options.cc = Array.isArray(addresses) ? addresses : [addresses];
+    return this;
+  }
+
+  subject(subject: string): this {
+    this.options.subject = subject;
+    return this;
+  }
+
+  body(body: string): this {
+    this.options.body = body;
+    return this;
+  }
+
+  attach(attachment: Attachment): this {
+    if (!this.options.attachments) {
+      this.options.attachments = [];
+    }
+    this.options.attachments.push(attachment);
+    return this;
+  }
+
+  priority(level: 'low' | 'normal' | 'high'): this {
+    this.options.priority = level;
+    return this;
+  }
+
+  build(): EmailOptions {
+    if (!this.options.to || !this.options.subject || !this.options.body) {
+      throw new Error('Required fields missing');
+    }
+    return this.options as EmailOptions;
+  }
+}
+
+// Usage - much cleaner than constructor with 8 parameters
+const email = new EmailBuilder()
+  .to(['user@example.com'])
+  .cc(['manager@example.com'])
+  .subject('Your order has shipped')
+  .body('Your order #12345 is on the way')
+  .priority('high')
+  .attach(trackingPDF)
+  .build();
+```
+
+**Why it's useful:**
+
+- Fluent, readable API
+- Enforces required fields at build time
+- Easy to add new optional parameters
+
+## 8. Result Pattern (for Error Handling)
+
+**Problem:** Exceptions make control flow hard to follow and errors easy to miss.
+
+**Solution:** Explicitly return success or failure.
+
+```typescript
+type Result<T, E = Error> = { success: true; value: T } | { success: false; error: E };
+
+class UserService {
+  async findUser(id: string): Promise<Result<User, string>> {
+    try {
+      const user = await this.repository.findById(id);
+
+      if (!user) {
+        return {
+          success: false,
+          error: `User ${id} not found`,
+        };
+      }
+
+      return {
+        success: true,
+        value: user,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: 'Database error',
+      };
+    }
+  }
+}
+
+// Usage - explicit error handling
+const result = await userService.findUser('123');
+
+if (result.success) {
+  console.log(result.value.name);
+} else {
+  console.error(result.error);
+}
+```
+
+**Why it's useful:**
+
+- Forces error handling at compile time
+- No surprises from uncaught exceptions
+- Clear success/failure paths
+
+## Conclusion
+
+These patterns aren't academic exercises - they solve real problems I face daily:
+
+- **Repository** - abstracts data access
+- **Factory** - manages complex creation
+- **Strategy** - swaps algorithms
+- **Decorator** - adds behavior flexibly
+- **Singleton** - controls instantiation
+- **Observer** - decouples events
+- **Builder** - constructs complex objects
+- **Result** - handles errors explicitly
+
+The key is knowing **when** to use them. Over-engineering is real - start simple and refactor to patterns when complexity justifies it.
+
+---
+
+_What design patterns do you use most? Any I missed that you find essential? Let's discuss on [LinkedIn](https://www.linkedin.com/in/anton-shyrko)!_

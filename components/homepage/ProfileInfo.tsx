@@ -54,15 +54,6 @@ const ProfileCardInfo = () => {
             <span className="ml-px text-gray-500">/</span>
             <span className="ml-0.5">{siteMetadata.socialAccounts.linkedin}</span>
           </a>
-          <span className="text-gray-400 dark:text-gray-500">|</span>
-          <a
-            target="_blank"
-            href={siteMetadata.linkedin}
-            rel="noreferrer"
-            className="flex items-center text-sm hover:underline"
-            data-umami-event="profile-card-facebook"
-          >
-          </a>
         </div>
       </div>
     </div>

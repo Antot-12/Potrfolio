@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import Bleed from 'pliny/ui/Bleed';
 import { CoreContent } from 'pliny/utils/contentlayer';
-import type { Blog } from 'contentlayer/generated';
+import type { Blog } from '.contentlayer/generated';
 
 import siteMetadata from '@/data/siteMetadata';
 import { Image, Comments, Link, PageTitle, SectionContainer, ScrollTopAndComment } from '@/components/ui';

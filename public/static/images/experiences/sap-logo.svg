@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80" width="200" height="80">
+  <!-- SAP blue background -->
+  <rect width="200" height="80" fill="#0FAAFF"/>
+
+  <!-- SAP text in white -->
+  <text x="100" y="52" font-family="Arial, sans-serif" font-size="42" font-weight="bold" fill="white" text-anchor="middle">SAP</text>
+</svg>

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { formatDate } from 'pliny/utils/formatDate';
 import { CoreContent } from 'pliny/utils/contentlayer';
-import type { Blog } from 'contentlayer/generated';
+import type { Blog } from '.contentlayer/generated';
 
 import { Link, Tag } from '@/components/ui';
 import siteMetadata from '@/data/siteMetadata';
@@ -121,7 +121,11 @@ export default function ListLayout({ posts, title, initialDisplayPosts = [], pag
                           {title}
                         </Link>
                       </h3>
-                      <div className="flex flex-wrap">{tags?.map((tag) => <Tag key={tag} text={tag} />)}</div>
+                      <div className="flex flex-wrap">
+                        {tags?.map((tag) => (
+                          <Tag key={tag} text={tag} />
+                        ))}
+                      </div>
                     </div>
                     <div className="prose max-w-none text-gray-500 dark:text-gray-400">{summary}</div>
                   </div>

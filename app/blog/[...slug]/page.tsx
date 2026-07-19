@@ -4,8 +4,8 @@ import 'katex/dist/katex.css';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MDXLayoutRenderer } from 'pliny/mdx-components';
-import type { Authors, Blog } from 'contentlayer/generated';
-import { allBlogs, allAuthors } from 'contentlayer/generated';
+import type { Authors, Blog } from '.contentlayer/generated';
+import { allBlogs, allAuthors } from '.contentlayer/generated';
 import { sortPosts, coreContent, allCoreContent } from 'pliny/utils/contentlayer';
 
 import { components } from '@/components/ui';

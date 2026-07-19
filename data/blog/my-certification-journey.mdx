@@ -1,0 +1,389 @@
+---
+title: 'My Journey Through 27+ Tech Certifications: What I Learned'
+date: '2025-03-01'
+lastmod: '2025-03-01'
+tags: ['Learning', 'Certifications', 'Career Development', 'AI', 'Machine Learning']
+draft: false
+summary: 'From Machine Learning to GitHub Copilot - my experience completing 27+ certifications and what actually matters for career growth.'
+images: ['/static/images/certifications.jpg']
+authors: ['default']
+---
+
+## Introduction
+
+Over the past year, I've completed 27+ certifications covering Machine Learning, AI, TypeScript, Cloud technologies, and soft skills. People often ask: "Are certifications worth it?" and "Which ones actually matter?"
+
+Here's my honest take, what I learned, and which ones actually helped my career at SAP.
+
+## The Certification Journey
+
+### Where It Started
+
+As a student at Technical University of Košice, I realized that university teaches fundamentals, but the industry moves fast. Certifications became my way to:
+
+- Stay current with emerging technologies
+- Learn from industry experts
+- Prove my knowledge to employers
+- Fill gaps in my practical skills
+
+### The Numbers
+
+27+ certifications across:
+
+- **Machine Learning & AI** (6 certifications)
+- **TypeScript & JavaScript** (4 certifications)
+- **Cloud & Microservices** (3 certifications)
+- **GitHub & Version Control** (3 certifications)
+- **Soft Skills** (11 certifications)
+
+## The Technical Certifications
+
+### Machine Learning with Python
+
+**What it covered:**
+
+- Machine Learning fundamentals
+- Scikit-learn, TensorFlow basics
+- Model evaluation and optimization
+- Real-world ML workflows
+
+```python
+# What I learned - practical ML patterns
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+
+class MLPipeline:
+    def __init__(self):
+        self.model = RandomForestClassifier(n_estimators=100)
+
+    def train(self, X, y):
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42
+        )
+
+        self.model.fit(X_train, y_train)
+
+        predictions = self.model.predict(X_test)
+        accuracy = accuracy_score(y_test, predictions)
+
+        return accuracy
+```
+
+**Was it worth it?** ✅ Yes
+
+- Helped me understand AI in the S&S Creation smart mirror
+- Applied concepts in SAP's data processing pipelines
+- Built confidence to explore ML projects
+
+### Building Scalable Microservices with TypeScript
+
+This one directly applied to my daily work at SAP.
+
+**Key takeaways:**
+
+```typescript
+// Design patterns I now use regularly
+interface ServiceConfig {
+  retryAttempts: number;
+  timeout: number;
+  circuitBreaker: CircuitBreakerConfig;
+}
+
+class ResilientService {
+  private config: ServiceConfig;
+
+  async callWithRetry<T>(fn: () => Promise<T>, attempts: number = this.config.retryAttempts): Promise<T> {
+    try {
+      return await fn();
+    } catch (error) {
+      if (attempts > 0) {
+        await this.delay(1000);
+        return this.callWithRetry(fn, attempts - 1);
+      }
+      throw error;
+    }
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+}
+```
+
+**Was it worth it?** ✅✅ Absolutely
+
+- Directly applicable to my SAP work
+- Learned patterns I use daily
+- Improved my system design thinking
+
+### GitHub Copilot Professional Certificate
+
+**What I learned:**
+
+- Effective prompt engineering for code generation
+- When to trust AI and when to verify
+- Accelerating development without sacrificing quality
+
+```typescript
+// How Copilot changed my workflow
+// Before: 30 minutes writing boilerplate
+// After: 5 minutes reviewing Copilot's suggestion
+
+interface User {
+  id: string;
+  email: string;
+  name: string;
+}
+
+// Copilot generates the full CRUD service
+// I review, customize, and add business logic
+class UserService {
+  // ... Copilot-assisted implementation
+  // My job: verify correctness, add edge cases
+}
+```
+
+**Was it worth it?** ✅ Yes
+
+- Made me 30-40% more productive
+- Taught me to use AI tools effectively
+- Changed how I approach coding
+
+## The Soft Skills Certifications
+
+### Critical Thinking and Problem Solving
+
+Surprisingly valuable for a developer role.
+
+**What I learned:**
+
+- Breaking down complex problems systematically
+- Identifying root causes vs. symptoms
+- Making decisions with incomplete information
+
+**Real application at SAP:**
+When debugging a production issue:
+
+1. **Gather data** - logs, metrics, user reports
+2. **Form hypotheses** - what could cause this?
+3. **Test systematically** - eliminate possibilities
+4. **Verify the fix** - did it solve the root cause?
+
+**Was it worth it?** ✅ Yes
+
+- Improved my debugging process
+- Better at architecture discussions
+- More effective in meetings
+
+### How to Push Back at Work
+
+**Key lessons:**
+
+- Saying "no" professionally
+- Proposing alternatives
+- Setting boundaries without burning bridges
+
+**Real example:**
+
+```
+❌ "I can't do that, I'm too busy"
+
+✅ "I'd love to help with that. Currently working on X and Y
+   with Z deadline. Would you like me to:
+   1. Prioritize this and push back X?
+   2. Deliver this after completing Y?
+   3. Collaborate with someone else who has capacity?"
+```
+
+**Was it worth it?** ✅ Yes
+
+- Saved me from burnout
+- Improved relationship with stakeholders
+- Learned to manage expectations
+
+### Nine Habits of Highly Confident People
+
+**Key habits I adopted:**
+
+1. **Prepare thoroughly** - confidence comes from preparation
+2. **Accept compliments** - don't deflect praise
+3. **Speak up early** in meetings
+4. **Admit what you don't know**
+5. **Celebrate small wins**
+
+**Impact on my career:**
+
+- More comfortable in technical discussions
+- Better at presenting my work
+- Willing to take on challenging projects
+
+## The Google AI Certifications
+
+### Start Writing Prompts like a Pro
+
+**What I learned:**
+
+- Effective prompt engineering
+- Getting better outputs from AI
+- Using AI as a thinking partner
+
+```
+❌ Bad prompt:
+"Write a function"
+
+✅ Good prompt:
+"Write a TypeScript function that validates user email addresses.
+Requirements:
+- Check format with regex
+- Verify domain exists (DNS lookup)
+- Return detailed error messages
+- Include unit tests"
+```
+
+**Was it worth it?** ✅ Yes
+
+- Daily use with ChatGPT and Copilot
+- Faster learning of new technologies
+- Better documentation writing
+
+### Google Gemini for Developers
+
+Learned about:
+
+- Multimodal AI (text, images, code)
+- Using Gemini API effectively
+- Building AI-powered applications
+
+**Was it worth it?** ⚠️ Somewhat
+
+- Interesting but less immediately applicable
+- Gemini isn't as widely used as GPT in my circles
+- Good to understand the AI landscape
+
+## What Actually Matters
+
+### Certifications That Had Real Impact
+
+1. **Technical skills directly related to my work** (TypeScript, Microservices)
+2. **AI/ML fundamentals** (helped with S&S Creation project)
+3. **Soft skills** (communication, confidence, critical thinking)
+4. **Tool-specific training** (GitHub Copilot, Git)
+
+### Certifications That Were "Nice to Have"
+
+1. **Overlapping content** (multiple AI courses covering similar topics)
+2. **Too basic** (some intro courses when I already knew the topic)
+3. **Niche technologies** not used in my daily work
+
+## The Real Value of Certifications
+
+### What Certifications DO
+
+✅ **Structure your learning** - follow a curriculum
+✅ **Prove baseline knowledge** - good for résumé
+✅ **Expose you to best practices** - learn from experts
+✅ **Build confidence** - "I know this officially"
+✅ **Show commitment** - you invest in learning
+
+### What Certifications DON'T DO
+
+❌ **Replace practical experience** - theory ≠ real-world skills
+❌ **Guarantee a job** - they help, but aren't sufficient
+❌ **Make you an expert** - they're just the starting point
+❌ **Stay current forever** - technology changes fast
+
+## My Certification Strategy
+
+### What I'd Do Again
+
+1. **Pick certifications aligned with career goals**
+   - I want to work in cloud/microservices → relevant certs
+2. **Balance technical and soft skills**
+   - 60% technical, 40% soft skills worked well
+
+3. **Apply knowledge immediately**
+   - Take cert → use in project → solidify learning
+
+4. **Don't collect for collecting's sake**
+   - Quality > quantity
+
+### What I'd Change
+
+1. **More selective** - I took some overlapping courses
+2. **Deeper focus** - go deep instead of wide
+3. **More hands-on projects** between certs
+4. **Better documentation** of what I learned
+
+## For Students and Early Career
+
+### My Advice
+
+**Do this:**
+
+- Start with fundamentals (data structures, algorithms, one language deeply)
+- Get 2-3 certifications in your target domain
+- Build projects that use what you learned
+- Contribute to open source
+- Write about what you're learning
+
+**Skip this:**
+
+- Collecting 50+ certifications
+- Expensive bootcamp certs (unless they include job placement)
+- Certifications in dying technologies
+- Certs without applying the knowledge
+
+### The Real Learning Happens
+
+- **Building projects** - you learn by doing
+- **Debugging production issues** - nothing teaches like fixing real problems
+- **Code reviews** - learn from experienced developers
+- **Reading code** - see how others solve problems
+- **Teaching others** - best way to solidify knowledge
+
+## The ROI Question
+
+**Time invested:** ~300-400 hours over 12 months
+**Cost:** Mostly free (LinkedIn Learning via SAP), some paid Google certs
+**Return:**
+
+- Got the SAP job (certifications helped résumé)
+- 30% more productive with AI tools
+- Confidence to take on new challenges
+- Better soft skills for team collaboration
+
+**Was it worth it?** Yes, but with diminishing returns after ~10-15 well-chosen certifications.
+
+## Current Learning Focus
+
+Now I focus on:
+
+- **Depth over breadth** - mastering TypeScript and Node.js
+- **System design** - harder to certify but crucial
+- **Real projects** - S&S Creation taught me more than any cert
+- **Mentoring** - teaching solidifies learning
+
+## Conclusion
+
+Certifications are a tool, not a goal. They helped me:
+
+- Structure my learning journey
+- Build confidence as a student entering industry
+- Prove knowledge to employers
+- Stay current with technology
+
+But the real learning came from:
+
+- Building the S&S Creation smart mirror
+- Debugging microservices at SAP
+- Code reviews with senior engineers
+- Shipping features to production
+
+**My recommendation:** Get 5-10 strategic certifications in your target domain, then focus on building things and solving real problems.
+
+The certificate is proof you started learning. The projects are proof you actually learned.
+
+---
+
+_What's your take on certifications? Have they helped your career? Let's discuss on [LinkedIn](https://www.linkedin.com/in/anton-shyrko)!_

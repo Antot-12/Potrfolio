@@ -1,0 +1,173 @@
+---
+title: 'Building Scalable Microservices with TypeScript and Node.js'
+date: '2025-01-15'
+lastmod: '2025-01-15'
+tags: ['TypeScript', 'Node.js', 'Microservices', 'Cloud', 'SAP']
+draft: false
+summary: 'Lessons learned from developing cloud-based microservices at SAP - focusing on reliability, performance, and scalability in a distributed system architecture.'
+images: ['/static/images/microservices.jpg']
+authors: ['default']
+---
+
+## Introduction
+
+Working as a Software Engineer at SAP, I've spent considerable time building cloud-based microservices that process big data and handle complex analytics workloads. In this post, I'll share practical insights from developing production-grade microservices using TypeScript and Node.js.
+
+## Why TypeScript for Microservices?
+
+TypeScript has become our go-to language for several key reasons:
+
+### Type Safety at Scale
+
+When you're building services that interact with multiple other services, type safety isn't just nice to have—it's essential. TypeScript catches errors at compile time that would otherwise surface in production.
+
+```typescript
+interface ServiceRequest {
+  userId: string;
+  operation: 'READ' | 'WRITE' | 'DELETE';
+  payload: Record<string, unknown>;
+}
+
+interface ServiceResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+```
+
+### Better Developer Experience
+
+With proper typing, IDE autocompletion and refactoring tools work seamlessly. This becomes crucial when working in large codebases with international teams.
+
+## Architecture Patterns We Use
+
+### 1. API Gateway Pattern
+
+All external requests go through an API gateway that handles:
+
+- Authentication & authorization
+- Rate limiting
+- Request routing
+- Response aggregation
+
+### 2. Service-to-Service Communication
+
+We primarily use REST APIs with strict contracts defined using OpenAPI specifications. For real-time needs, we implement event-driven patterns with message queues.
+
+```typescript
+class DataProcessingService {
+  async processData(data: ProcessingRequest): Promise<ProcessingResult> {
+    // Validate input
+    const validated = await this.validator.validate(data);
+
+    // Process asynchronously
+    const jobId = await this.queue.enqueue(validated);
+
+    // Return tracking info
+    return {
+      jobId,
+      status: 'PROCESSING',
+      estimatedCompletion: this.estimateTime(data.size),
+    };
+  }
+}
+```
+
+### 3. Database Per Service
+
+Each microservice owns its data. This ensures loose coupling but requires careful API design for data aggregation.
+
+## Performance & Reliability
+
+### Monitoring & Observability
+
+We instrument every service with:
+
+- **Metrics**: Response times, error rates, throughput
+- **Logging**: Structured JSON logs with correlation IDs
+- **Tracing**: Distributed tracing across service boundaries
+
+### Error Handling
+
+Robust error handling is non-negotiable:
+
+```typescript
+class ServiceError extends Error {
+  constructor(
+    message: string,
+    public code: string,
+    public statusCode: number,
+    public metadata?: Record<string, unknown>
+  ) {
+    super(message);
+    this.name = 'ServiceError';
+  }
+}
+
+// Usage
+throw new ServiceError('Failed to process request', 'PROCESSING_ERROR', 500, { requestId, userId });
+```
+
+## CI/CD Pipeline
+
+Our deployment pipeline includes:
+
+1. **Automated Testing**: Unit, integration, and contract tests
+2. **Code Quality Gates**: Linting, type checking, security scanning
+3. **Staged Rollouts**: Canary deployments with automated rollback
+4. **Health Checks**: Kubernetes liveness and readiness probes
+
+## Lessons Learned
+
+### 1. Keep Services Focused
+
+A microservice should do one thing well. If you find yourself saying "and it also does...", it's probably too big.
+
+### 2. API Versioning from Day One
+
+Breaking changes are inevitable. Plan for them:
+
+```typescript
+app.use('/api/v1', v1Router);
+app.use('/api/v2', v2Router);
+```
+
+### 3. Invest in Developer Tools
+
+Good tooling pays dividends:
+
+- Local development environments with Docker Compose
+- Service mocks for integration testing
+- Automated API documentation
+
+### 4. Document Everything
+
+When working in international teams across time zones, good documentation is essential. We use:
+
+- OpenAPI specs for APIs
+- Architecture Decision Records (ADRs)
+- Runbooks for operations
+
+## Challenges We Still Face
+
+### Data Consistency
+
+Managing consistency across services without distributed transactions requires careful design and sometimes accepting eventual consistency.
+
+### Service Discovery
+
+As the number of services grows, service discovery and load balancing become critical infrastructure concerns.
+
+### Testing Complexity
+
+Testing microservices is harder than monoliths. We're constantly improving our testing strategies and tooling.
+
+## Conclusion
+
+Building scalable microservices with TypeScript and Node.js at SAP has been a journey of continuous learning. The combination of TypeScript's type safety, Node.js's performance, and modern cloud infrastructure enables us to build reliable systems that serve users globally.
+
+The key is to start simple, measure everything, and iterate based on real production feedback. There's no perfect architecture—only trade-offs that make sense for your specific context.
+
+---
+
+_Working on cloud microservices? I'd love to hear about your experiences. Connect with me on [LinkedIn](https://www.linkedin.com/in/anton-shyrko) to continue the conversation._

@@ -6,7 +6,7 @@ tags: ['react', 'javascript', 'frontend', 'design-patterns']
 summary: 'React’s flexibility is one of its biggest strengths, but it can also be a challenge when scaling applications. In this post, we’ll explore how to effectively structure React applications.'
 ---
 
-import Twemoji from './components/ui/Twemoji';
+import Twemoji from '@/components/ui/Twemoji';
 
 ## Introduction
 
@@ -42,21 +42,23 @@ State management is critical in React, but it’s easy to misuse.
 Organize your project by feature rather than by file type. This structure improves maintainability and makes it easier for new developers to understand the project.
 
     ```plaintext
+
 src/
 ├── components/
 ├── features/
-│   ├── Authentication/
-│   │   ├── LoginForm.js
-│   │   ├── SignupForm.js
-│   │   ├── authSlice.js
-│   ├── Dashboard/
-│   │   ├── DashboardPage.js
-│   │   ├── DashboardHeader.js
+│ ├── Authentication/
+│ │ ├── LoginForm.js
+│ │ ├── SignupForm.js
+│ │ ├── authSlice.js
+│ ├── Dashboard/
+│ │ ├── DashboardPage.js
+│ │ ├── DashboardHeader.js
 ├── hooks/
 ├── utils/
 ├── services/
 ├── App.js
-```
+
+````
 
 ### Separation of Concerns
 
@@ -91,7 +93,7 @@ export const useFetchData = (url) => {
 
   return { data, loading, error };
 };
-```
+````
 
 ### Use Atomic Design for UI Components
 

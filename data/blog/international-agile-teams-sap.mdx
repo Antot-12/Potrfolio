@@ -1,0 +1,437 @@
+---
+title: 'Working in International Agile Teams: Lessons from SAP'
+date: '2025-02-20'
+lastmod: '2025-02-20'
+tags: ['Agile', 'Team Collaboration', 'SAP', 'Remote Work', 'Communication']
+draft: false
+summary: 'What I learned working with international teams at SAP - from time zone challenges to code reviews across cultures.'
+images: ['/static/images/agile-team.jpg']
+authors: ['default']
+---
+
+## Introduction
+
+Working at SAP in an international agile team has been eye-opening. Our team spans multiple time zones, cultures, and communication styles. Here's what I've learned about making it work.
+
+## The Team Setup
+
+Our team consists of developers from:
+
+- **Slovakia** (where I'm based)
+- **Germany**
+- **India**
+- **Czech Republic**
+
+**Technologies:** TypeScript, Node.js, Java
+**Communication:** English
+**Methodology:** Agile/Scrum with 2-week sprints
+
+## Time Zone Challenges
+
+### The 3-Hour Meeting Window
+
+With team members across time zones, we have a narrow window for synchronous meetings:
+
+- **9:00 AM** in Bangalore → **5:30 AM** in Central Europe (too early)
+- **5:00 PM** in Europe → **9:30 PM** in India (too late)
+- **Sweet spot:** 11:00 AM - 2:00 PM CET
+
+### What We Do
+
+**Daily Standups:**
+
+- 11:00 AM CET (compromise time)
+- 15 minutes max, strictly timeboxed
+- Async updates in Slack for those who can't join
+
+```typescript
+// Our standup format (text in Slack)
+interface StandupUpdate {
+  yesterday: string[];
+  today: string[];
+  blockers: string[];
+  availability: string; // "9-17 CET" or "flexible"
+}
+```
+
+**Sprint Planning:**
+
+- Recorded for async review
+- Documents shared 24h in advance
+- Key decisions documented in Jira
+
+## Communication Patterns
+
+### What Works
+
+**Over-communicate in writing:**
+
+```markdown
+❌ "Can you review my PR?"
+
+✅ "PR #456: User authentication refactor
+
+- Changes: Moved from JWT to OAuth
+- Testing: Added integration tests
+- Breaking changes: None
+- Review focus: Security implications
+- Deadline: Need review by EOD Thursday for Friday deploy"
+```
+
+**Use async-first communication:**
+
+- Slack for updates
+- Jira for decisions
+- PRs for technical discussion
+- Meetings only when necessary
+
+**Document everything:**
+
+```typescript
+// Good code comments for international teams
+/**
+ * Processes user data for GDPR compliance
+ *
+ * Requirements:
+ * - Data must be anonymized after 30 days (EU regulation)
+ * - PII fields: email, name, address
+ * - Keeps userId for analytics
+ *
+ * @param user - User object from database
+ * @returns Anonymized user object
+ *
+ * Related: JIRA-1234, Privacy Policy v2.3
+ */
+function anonymizeUser(user: User): AnonymizedUser {
+  // Implementation
+}
+```
+
+### What Doesn't Work
+
+❌ **Assuming immediate responses**
+
+- Someone is always sleeping or in meetings
+
+❌ **Sarcasm in text**
+
+- Doesn't translate well across cultures
+
+❌ **Unscheduled calls**
+
+- "Quick call?" might catch someone at 8 PM
+
+❌ **Vague blockers**
+
+- "Something is broken" vs "Redis connection timeout on production pod-3"
+
+## Code Review Across Cultures
+
+### Different Review Styles
+
+**Direct cultures** (Germany, Slovakia):
+
+```
+"This approach is wrong. Use a Set instead of Array for O(1) lookup."
+```
+
+**Indirect cultures** (some Asian countries):
+
+```
+"Have we considered using a Set here? It might improve performance."
+```
+
+### Our Team's Approach
+
+We established **explicit review guidelines:**
+
+1. **Be direct but respectful**
+
+   ```
+   ✅ "This will cause memory leaks. Use WeakMap instead."
+   ❌ "This is stupid."
+   ✅ "Consider error handling here. Current code throws on null."
+   ```
+
+2. **Explain the "why"**
+
+   ```typescript
+   // Good review comment
+   "Suggestion: Use async/await instead of callbacks
+
+   Why: Easier error handling, better readability, avoids callback hell
+
+   Example:
+   async function fetchData() {
+     try {
+       const data = await api.get('/users');
+       return data;
+     } catch (error) {
+       logger.error(error);
+       throw error;
+     }
+   }"
+   ```
+
+3. **Distinguish between:**
+   - **Must fix** (breaks functionality, security issue)
+   - **Should fix** (violates team standards)
+   - **Nice to have** (personal preference)
+
+### Our Review Checklist
+
+```typescript
+interface ReviewChecklist {
+  functionality: {
+    requirementsMet: boolean;
+    edgeCasesHandled: boolean;
+    errorHandling: boolean;
+  };
+  quality: {
+    testsIncluded: boolean;
+    performanceConsidered: boolean;
+    documentationUpdated: boolean;
+  };
+  standards: {
+    followsCodingStyle: boolean;
+    noDuplicateCode: boolean;
+    securityChecked: boolean;
+  };
+}
+```
+
+## Jira and Agile Ceremonies
+
+### Sprint Planning
+
+**Before meeting:**
+
+- PO prioritizes backlog
+- Technical lead estimates complexity
+- Team reviews tickets
+
+**During meeting (90 min):**
+
+- Review sprint goal (10 min)
+- Discuss top-priority tickets (60 min)
+- Commitment and capacity check (20 min)
+
+**After meeting:**
+
+- Record decisions in Confluence
+- Update Jira with assignments
+- Share recording for those who missed
+
+### Retrospectives
+
+We do **async retrospectives** every 2 sprints:
+
+```markdown
+## Sprint Retro Template
+
+### What Went Well? 👍
+
+- Deployed 5 features without incidents
+- Improved test coverage to 85%
+
+### What Could Be Better? 🤔
+
+- Build pipeline slow (15 min → need optimization)
+- Unclear requirements on JIRA-567
+
+### Action Items 🎯
+
+- [ ] @anton Optimize Docker build (JIRA-890)
+- [ ] @team PO to clarify acceptance criteria format
+```
+
+## Cultural Considerations
+
+### Language Barriers
+
+English is everyone's second language:
+
+**Do:**
+
+- Speak clearly, not necessarily slowly
+- Use simple vocabulary
+- Confirm understanding: "Does that make sense?"
+- Write important decisions down
+
+**Don't:**
+
+- Use idioms ("let's circle back", "low-hanging fruit")
+- Assume everyone got the joke
+- Get frustrated with accents
+
+### Meeting Etiquette
+
+**Video on or off?**
+Our team: **video on for standups and planning**, off for technical discussions (easier to share screen)
+
+**Speaking up:**
+
+- Some cultures wait to be asked
+- We explicitly ask: "Any concerns? [Name], what do you think?"
+
+**Decision making:**
+
+- Consensus when possible
+- Clear owner when needed
+- Document the decision either way
+
+## Tools We Use
+
+### Communication
+
+- **Slack** - day-to-day, quick questions
+- **Teams** - meetings, video calls
+- **Email** - official communications only
+
+### Development
+
+- **Jira** - task tracking
+- **Confluence** - documentation
+- **GitHub** - code, reviews
+- **Jenkins** - CI/CD
+
+### Monitoring
+
+- **Grafana** - metrics
+- **Kibana** - logs
+- **PagerDuty** - incidents
+
+## Handling Incidents
+
+When something breaks in production:
+
+### Our Process
+
+```typescript
+interface IncidentResponse {
+  detect: 'Monitoring alerts';
+  notify: 'PagerDuty → on-call engineer';
+  assess: 'Severity (P1-P4)';
+  communicate: 'Slack #incidents channel';
+  resolve: 'Fix or rollback';
+  postMortem: 'Confluence doc, no blame';
+}
+```
+
+### Incident Communication
+
+```markdown
+## Incident Update Template
+
+**Status:** Investigating
+**Impact:** 5% of API requests failing
+**Affected:** User login endpoint
+**Team notified:** Yes
+**ETA:** Investigating, update in 30 min
+
+**Timeline:**
+
+- 14:23 CET: Alert fired
+- 14:25 CET: @anton investigating
+- 14:30 CET: Root cause identified (Redis timeout)
+- 14:35 CET: Fix deployed
+- 14:40 CET: Monitoring for stability
+```
+
+## Lessons Learned
+
+### 1. Async-First Mindset
+
+Not everyone is online at the same time. Write like the reader is in a different time zone.
+
+### 2. Document Decisions
+
+If it's not in Jira/Confluence, it didn't happen. Meeting decisions evaporate.
+
+### 3. Be Explicit
+
+What's obvious to you isn't obvious to someone from a different background.
+
+### 4. Over-communicate Early
+
+Better to over-explain than leave someone blocked for 12 hours waiting for your timezone.
+
+### 5. Build Trust
+
+Video calls build relationships. Async communication maintains them.
+
+## Practical Tips
+
+### For Code Reviews
+
+1. **Review within 24 hours** (at least initial feedback)
+2. **Start with positives** ("Good test coverage!")
+3. **Ask questions** instead of commanding ("Why did we choose approach X?")
+4. **Provide examples** for suggested changes
+
+### For Standups
+
+1. **Be concise** - respect everyone's time
+2. **Mention blockers early**
+3. **Overlap with others?** Coordinate async
+4. **Won't be available?** Post update in Slack
+
+### For PRs
+
+```markdown
+## PR Template
+
+### What?
+
+Brief description of changes
+
+### Why?
+
+Link to Jira ticket, explain business context
+
+### Testing?
+
+- [ ] Unit tests added
+- [ ] Integration tests pass
+- [ ] Tested locally
+- [ ] QA environment verified
+
+### Deployment notes?
+
+Any special considerations (migrations, feature flags, etc.)
+
+### Screenshots?
+
+If UI changes, include before/after
+```
+
+## The Reality
+
+**It's not always smooth:**
+
+- Misunderstandings happen
+- Time zones still suck
+- Some things need synchronous discussion
+- Urgent fixes at 11 PM happen
+
+**But it works when:**
+
+- Everyone commits to communication norms
+- We trust each other
+- Documentation is priority
+- We assume good intent
+
+## Conclusion
+
+Working in international agile teams at SAP taught me:
+
+- **Communication is a skill** - it's not just about coding
+- **Process enables autonomy** - good structure gives freedom
+- **Culture matters** - understand and adapt
+- **Writing scales** - good documentation multiplies productivity
+
+The best code is useless if the team can't collaborate effectively.
+
+---
+
+_Working in distributed teams? What are your challenges and solutions? Let's discuss on [LinkedIn](https://www.linkedin.com/in/anton-shyrko)!_

@@ -1,0 +1,286 @@
+---
+title: 'From Student to Software Engineer at SAP: My Journey'
+date: '2025-02-10'
+lastmod: '2025-02-10'
+tags: ['Career', 'SAP', 'Software Engineering', 'Learning']
+draft: false
+summary: 'My journey from Technical University of Košice to becoming a Software Engineer at SAP - lessons learned, challenges faced, and advice for aspiring developers.'
+images: ['/static/images/career-journey.jpg']
+authors: ['default']
+---
+
+## Introduction
+
+_"Degree unlocked. Mental stability still loading…"_
+
+After years of deadlines, caffeine, questionable decisions, and pretending I understood what was happening, I finally made it. In this post, I want to share my journey from being a computer science student to working as a Software Engineer at SAP.
+
+## The Beginning: Technical University of Košice
+
+I started my journey at Technical University of Košice in 2021, diving deep into:
+
+- **C++ and Java** fundamentals
+- **Object-oriented programming** concepts
+- **Database design** and data processing
+- **Algorithm design** and optimization
+
+### Early Challenges
+
+The transition from theory to practice was rough. I remember spending hours debugging segmentation faults in C++ and wondering if I was cut out for this.
+
+The key lesson? **Everyone struggles. The difference is persistence.**
+
+## Building Practical Skills
+
+While university taught me fundamentals, I knew I needed hands-on experience:
+
+### Side Projects
+
+I started building small projects:
+
+- A URL shortener (May 2025)
+- A React Native number guessing game
+- Various web applications to experiment with new technologies
+
+Each project taught me something new:
+
+- **Git & GitHub** for version control
+- **Modern JavaScript/TypeScript** ecosystems
+- **Testing and debugging** strategies
+- **User interface design** principles
+
+### Open Source & Learning
+
+I became obsessed with learning:
+
+- Completed 27+ certifications in AI, Machine Learning, TypeScript, and cloud technologies
+- Contributed to understanding modern development practices
+- Joined developer communities and learned from others
+
+```typescript
+// From my early projects - simple but it taught me a lot
+interface URLMapping {
+  shortCode: string;
+  originalURL: string;
+  createdAt: Date;
+  clicks: number;
+}
+
+class URLShortener {
+  private mappings: Map<string, URLMapping> = new Map();
+
+  shorten(url: string): string {
+    const shortCode = this.generateCode();
+    this.mappings.set(shortCode, {
+      shortCode,
+      originalURL: url,
+      createdAt: new Date(),
+      clicks: 0,
+    });
+    return shortCode;
+  }
+
+  private generateCode(): string {
+    // Simple random code generation
+    return Math.random().toString(36).substring(2, 8);
+  }
+}
+```
+
+## The S&S Creation Chapter
+
+In May 2024, I co-founded **S&S Creation** and took on the role of CEO and Software Developer. This was transformative because:
+
+### Leadership Experience
+
+Managing a small team taught me:
+
+- **Project planning** and timeline estimation
+- **Stakeholder communication**
+- **Resource allocation** decisions
+- **Technical debt** management
+
+### Technical Growth
+
+Building the smart mirror project pushed me to learn:
+
+- **IoT hardware integration** with Raspberry Pi
+- **Real-time data processing** with Python
+- **Cloud architecture** design
+- **AI/ML integration** for wellness insights
+
+### Business Acumen
+
+Being CEO meant understanding:
+
+- Product-market fit
+- Customer feedback loops
+- MVP vs. feature creep
+- Sustainable development practices
+
+## Landing the SAP Role
+
+In August 2025, I joined SAP as a Software Engineer. The interview process taught me a lot:
+
+### Technical Interviews
+
+- **Algorithm & data structures** - those university courses paid off!
+- **System design** - designing scalable microservices
+- **Coding challenges** - TypeScript and problem-solving under pressure
+- **Behavioral questions** - STAR method for past experiences
+
+### What Helped Me Stand Out
+
+1. **Practical projects** - S&S Creation showed I could build real products
+2. **Continuous learning** - my certifications showed commitment to growth
+3. **Technical blog** (this one!) - demonstrated communication skills
+4. **Open source contributions** - showed I could work in teams
+
+## Life at SAP
+
+### The Technology Stack
+
+Working with:
+
+- **TypeScript & Node.js** for microservices
+- **Cloud infrastructure** at scale
+- **Big data processing** and analytics
+- **Modern DevOps** practices (CI/CD, containerization)
+
+### The Team Environment
+
+- **International collaboration** - working across time zones
+- **Code reviews** - learning from experienced engineers
+- **Agile methodologies** - sprint planning, retrospectives
+- **Mentorship** - both receiving and giving guidance
+
+### Daily Work
+
+```typescript
+// Example of the kind of code I work with at SAP
+interface DataProcessingJob {
+  id: string;
+  type: 'BATCH' | 'STREAM';
+  priority: 'HIGH' | 'MEDIUM' | 'LOW';
+  payload: unknown;
+}
+
+class JobProcessor {
+  async process(job: DataProcessingJob): Promise<void> {
+    // Validate and sanitize input
+    const validated = await this.validator.validate(job);
+
+    // Process based on type
+    if (job.type === 'STREAM') {
+      await this.streamProcessor.handle(validated);
+    } else {
+      await this.batchProcessor.handle(validated);
+    }
+
+    // Update metrics
+    await this.metrics.recordJobCompletion(job.id);
+  }
+}
+```
+
+## Key Lessons Learned
+
+### 1. Theory + Practice = Success
+
+University fundamentals are crucial, but practical experience is what gets you hired.
+
+### 2. Build Things
+
+Your GitHub is your portfolio. Build projects that showcase your skills and solve real problems.
+
+### 3. Communication Matters
+
+Being able to explain technical concepts clearly is as important as coding skills.
+
+### 4. Never Stop Learning
+
+The tech industry moves fast. Continuous learning isn't optional - it's required.
+
+### 5. Networking is Important
+
+Many opportunities come through connections. Engage with the developer community.
+
+### 6. Imposter Syndrome is Real
+
+Everyone feels it. The key is to keep going despite it.
+
+## Skills That Matter Most
+
+### Technical Skills
+
+- **TypeScript/JavaScript** - Most web development roles
+- **Python** - Data processing, AI/ML, automation
+- **Cloud platforms** - AWS, Azure, GCP
+- **Version control** - Git is non-negotiable
+- **Testing** - Unit, integration, E2E testing
+
+### Soft Skills
+
+- **Problem-solving** - Breaking down complex problems
+- **Communication** - Explaining technical concepts
+- **Collaboration** - Working effectively in teams
+- **Time management** - Balancing multiple priorities
+- **Adaptability** - Learning new technologies quickly
+
+## Advice for Aspiring Developers
+
+### For Students
+
+1. **Don't just study for exams** - build real projects
+2. **Contribute to open source** - learn from real codebases
+3. **Join coding communities** - Discord, Reddit, local meetups
+4. **Do internships** - practical experience is invaluable
+5. **Build a portfolio** - showcase your best work
+
+### For Career Switchers
+
+1. **Focus on fundamentals** - data structures, algorithms, design patterns
+2. **Pick one stack** - become proficient before branching out
+3. **Network actively** - attend meetups, conferences, webinars
+4. **Create side projects** - demonstrate your skills
+5. **Be patient** - it takes time, but it's worth it
+
+### For Everyone
+
+1. **Write about your learnings** - start a blog or Twitter
+2. **Learn in public** - share your journey
+3. **Ask for help** - the community is supportive
+4. **Review others' code** - you learn by teaching
+5. **Take care of your health** - burnout is real
+
+## The Road Ahead
+
+My journey is far from over. I'm excited about:
+
+- **Deepening my expertise** in cloud architecture
+- **Exploring AI/ML** applications in software engineering
+- **Mentoring** junior developers
+- **Contributing to open source** more actively
+- **Building products** that solve real problems
+
+## Emotional Honesty
+
+Was it easy? No.
+Did I doubt myself? Daily.
+Was it worth it? Absolutely.
+
+The diploma is real. The sleep schedule is still fictional. The emotional damage? Professionally formatted.
+
+But I'm exactly where I want to be, doing what I love, and that makes all the late nights and caffeine-fueled debugging sessions worth it.
+
+## Conclusion
+
+From student at Technical University of Košice to Software Engineer at SAP - it's been a wild ride of learning, building, failing, and growing.
+
+If you're on this journey too, remember: **every senior developer was once a confused beginner**. Keep learning, keep building, and keep pushing forward.
+
+The tech industry needs diverse perspectives and fresh ideas. Your background, your story, your unique approach - that's what makes you valuable.
+
+---
+
+_Are you on a similar journey? I'd love to hear your story. Connect with me on [LinkedIn](https://www.linkedin.com/in/anton-shyrko) and let's support each other!_

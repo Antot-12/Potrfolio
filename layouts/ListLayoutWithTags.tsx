@@ -4,7 +4,7 @@ import { slug } from 'github-slugger';
 import { usePathname } from 'next/navigation';
 import { formatDate } from 'pliny/utils/formatDate';
 import { CoreContent } from 'pliny/utils/contentlayer';
-import type { Blog } from 'contentlayer/generated';
+import type { Blog } from '.contentlayer/generated';
 
 import tagData from 'app/tag-data.json';
 import { Link, Tag } from '@/components/ui';
@@ -134,7 +134,11 @@ export default function ListLayoutWithTags({ posts, title, initialDisplayPosts =
                               {title}
                             </Link>
                           </h2>
-                          <div className="flex flex-wrap">{tags?.map((tag) => <Tag key={tag} text={tag} />)}</div>
+                          <div className="flex flex-wrap">
+                            {tags?.map((tag) => (
+                              <Tag key={tag} text={tag} />
+                            ))}
+                          </div>
                         </div>
                         <div className="prose max-w-none text-gray-500 dark:text-gray-400">{summary}</div>
                       </div>

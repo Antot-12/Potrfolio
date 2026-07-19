@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 
 import { CoreContent } from 'pliny/utils/contentlayer';
-import type { Blog } from 'contentlayer/generated';
+import type { Blog } from '.contentlayer/generated';
 
 import siteMetadata from '@/data/siteMetadata';
 

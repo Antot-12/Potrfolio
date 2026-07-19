@@ -57,7 +57,7 @@ const Avatar = () => {
       ref={ref}
     >
       <div style={style} className="max-h-[430px] overflow-hidden rounded-md transition-all duration-200 ease-out">
-        <Image src={'/static/images/avatar.jpg'} alt="avatar" width={430} height={430} />
+        <Image src={'/static/images/avatar.jpg'} alt="avatar" width={430} height={430} loading="eager" />
       </div>
     </div>
   );

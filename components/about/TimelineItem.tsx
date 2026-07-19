@@ -8,7 +8,7 @@ import Twemoji from '@/components/ui/Twemoji';
 import { EXPERIENCES } from './CareerTimeline';
 
 const TimelineItem = ({ exp, last }: { exp: (typeof EXPERIENCES)[0]; last?: boolean }) => {
-  const { org, url, logo, start, end, title, icon, event, details: Details } = exp;
+  const { org, url, logo, start, end, title, icon, event, details: Details, skills } = exp;
 
   return (
     <div
@@ -73,6 +73,18 @@ const TimelineItem = ({ exp, last }: { exp: (typeof EXPERIENCES)[0]; last?: bool
         </summary>
         <div className="pt-1 text-base">
           <Details />
+          {skills && skills.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {skills.map((skill) => (
+                <span
+                  key={skill}
+                  className="rounded-full bg-primary-500/10 px-3 py-1 text-xs font-medium text-primary-600 dark:bg-primary-500/20 dark:text-primary-400"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </details>
     </div>
