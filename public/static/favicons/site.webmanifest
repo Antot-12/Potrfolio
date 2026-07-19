@@ -1,14 +1,15 @@
 {
-  "name": "",
-  "short_name": "",
+  "name": "Anton Shyrko's Portfolio",
+  "short_name": "Anton's Blog",
   "icons": [
     {
-      "src": "/tennis-racquet.png",
+      "src": "/Potrfolio/static/favicons/tennis-racquet.png",
       "sizes": "96x96",
       "type": "image/png"
     }
   ],
-  "theme_color": "#000000",
-  "background_color": "#000000",
-  "display": "standalone"
+  "theme_color": "#7aa2f7",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/Potrfolio/"
 }
