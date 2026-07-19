@@ -11,6 +11,7 @@ const siteMetadata = {
   analyticsURL: ' ',
   siteRepo: 'https://github.com/Antot-12/Potrfolio',
   siteLogo: '/Potrfolio/static/images/avatar.jpg',
+  socialBanner: '/Potrfolio/static/images/avatar.jpg',
   image: '/Potrfolio/static/images/avatar.jpg',
   email: 'antottoturial@gmail.com',
   github: 'https://github.com/Antot-12',
