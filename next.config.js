@@ -186,9 +186,9 @@ const securityHeaders = [
   },
 ];
 
-const output = process.env.EXPORT ? 'export' : undefined;
-const basePath = process.env.BASE_PATH || undefined;
-const unoptimized = process.env.UNOPTIMIZED ? true : undefined;
+const output = process.env.EXPORT ? 'export' : 'standalone';
+const basePath = process.env.BASE_PATH || '';
+const unoptimized = process.env.UNOPTIMIZED ? true : false;
 
 module.exports = () => {
   const plugins = [withContentlayer, withBundleAnalyzer];
