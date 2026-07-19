@@ -11,6 +11,8 @@
 
 [🌐 Live Demo](https://antot-12.github.io/Potrfolio/) • [📝 Blog](https://antot-12.github.io/Potrfolio/blog) • [👨‍💻 About Me](https://antot-12.github.io/Potrfolio/about)
 
+![Preview](img.png)
+
 </div>
 
 ---
