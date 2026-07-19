@@ -4,7 +4,7 @@ export const EXPERIENCES = [
   {
     org: 'SAP',
     url: 'https://www.sap.com',
-    logo: '/static/images/experiences/sap-logo.svg',
+    logo: '/Potrfolio/static/images/experiences/sap-logo.svg',
     start: 'Aug 2025',
     end: 'Present',
     title: 'Middle Software Engineer',
@@ -30,7 +30,7 @@ export const EXPERIENCES = [
   {
     org: 'S&S Creation',
     url: 'https://github.com/Antot-12',
-    logo: '/static/images/experiences/Spekulus.png',
+    logo: '/Potrfolio/static/images/experiences/Spekulus.png',
     start: 'May 2024',
     end: 'Aug 2025',
     title: 'Chief Executive Officer & Software Developer',
@@ -64,7 +64,7 @@ export const EXPERIENCES = [
   {
     org: 'Technical University of Košice',
     url: 'https://tuke.sk',
-    logo: '/static/images/experiences/tuke-logo.png',
+    logo: '/Potrfolio/static/images/experiences/tuke-logo.png',
     start: 'Sep 2021',
     end: 'Jun 2026',
     title: 'Student - Faculty of Informatics',
@@ -99,7 +99,7 @@ export const EXPERIENCES = [
   {
     org: 'Hackathons & Competitions',
     url: 'https://linkedin.com/in/anton-shyrko',
-    logo: '/static/images/experiences/hackathon-logo.png',
+    logo: '/Potrfolio/static/images/experiences/hackathon-logo.png',
     start: '2023',
     end: '2024',
     title: 'Hackathon Winner & Competition Achievements',
@@ -128,7 +128,7 @@ export const EXPERIENCES = [
   {
     org: 'Personal Projects',
     url: 'https://github.com/Antot-12/projects',
-    logo: '/static/images/experiences/personal-projects-logo.png',
+    logo: '/Potrfolio/static/images/experiences/personal-projects-logo.png',
     start: 'Various',
     end: 'Present',
     title: 'Project Developer',
