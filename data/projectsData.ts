@@ -5,7 +5,7 @@ const projectsData: Project[] = [
     type: 'self',
     title: 'Smart URL Shortener',
     description: 'A simple, fast, and customizable URL shortener built with modern TypeScript and Node.js.',
-    imgSrc: '/static/images/projects/smart-url-shortener.png',
+    imgSrc: '/static/images/projects/chat-bot-v1.png', // TODO: Add actual smart-url-shortener.png
     repo: 'Antot-12/Smart-URL-Shortener',
     builtWith: ['TypeScript', 'Node.js', 'Express', 'PostgreSQL', 'Redis', 'React', 'Tailwind CSS', 'Docker'],
   },
@@ -14,7 +14,7 @@ const projectsData: Project[] = [
     title: 'Guess My Number Game',
     description:
       'A fun React Native app where you challenge the app to guess your number! Features smooth animations and engaging gameplay.',
-    imgSrc: '/static/images/projects/guess-my-number-game.png',
+    imgSrc: '/static/images/projects/ping-pong-game.png', // TODO: Add actual guess-my-number-game.png
     repo: 'Antot-12/Guess-My-Number-Game',
     builtWith: ['React Native', 'TypeScript', 'Expo', 'Android Studio', 'iOS'],
   },

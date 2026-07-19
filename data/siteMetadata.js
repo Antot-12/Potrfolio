@@ -10,8 +10,8 @@ const siteMetadata = {
   siteUrl: 'https://antot-12.github.io/Potrfolio',
   analyticsURL: ' ',
   siteRepo: 'https://github.com/Antot-12/Potrfolio',
-  siteLogo: '/static/images/avatar.jpg',
-  image: '/static/images/avatar.jpg',
+  siteLogo: '/Potrfolio/static/images/avatar.jpg',
+  image: '/Potrfolio/static/images/avatar.jpg',
   email: 'antottoturial@gmail.com',
   github: 'https://github.com/Antot-12',
   linkedin: 'https://www.linkedin.com/in/anton-shyrko/',
@@ -51,7 +51,7 @@ const siteMetadata = {
     provider: 'kbar',
     kbarConfig: {
       // path to load documents to search
-      searchDocumentsPath: `${process.env.BASE_PATH || ''}/search.json`,
+      searchDocumentsPath: '/Potrfolio/search.json',
     },
   },
 };
